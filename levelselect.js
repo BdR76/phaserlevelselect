@@ -112,7 +112,7 @@ function onSpriteDown(sprite, pointer) {
 		var tween = game.add.tween(IconGroup).to({ x: xpos+4 }, 20, Phaser.Easing.Linear.None)
 			.to({ x: xpos-4 }, 30, Phaser.Easing.Linear.None)
 			.to({ x: xpos+4 }, 40, Phaser.Easing.Linear.None)
-			.to({ x: xpos-4 }, 50, Phaser.Easing.Linear.None)
+			.to({ x: xpos }, 50, Phaser.Easing.Linear.None)
 			.start();
 	} else {
 		alert('OK level selected! -> ' +sprite.health);
