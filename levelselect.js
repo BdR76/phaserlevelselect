@@ -62,10 +62,12 @@ function createLevelIcons() {
 			
 			// create icon
 			holdicons[levelnr-1] = createLevelIcon(xpos, ypos, levelnr, isLocked, stars);
+			var backicon = holdicons[levelnr-1].getAt(0);
+
+			// keep level nr, used in onclick method
+			backicon.health = levelnr;
 
 			// input handler
-			var backicon = holdicons[levelnr-1].getAt(0);
-			backicon.health = levelnr;
 			backicon.inputEnabled = true;
 			backicon.events.onInputDown.add(onSpriteDown, this);
 		};
@@ -78,6 +80,10 @@ function createLevelIcon(xpos, ypos, levelnr, isLocked, stars) {
 	var IconGroup = game.add.group();
 	IconGroup.x = xpos;
 	IconGroup.y = ypos;
+
+	// keep original position, for restoring after certain tweens
+	IconGroup.xOrg = xpos;
+	IconGroup.yOrg = ypos;
 
 	// determine background frame
 	var frame = 0;
@@ -107,15 +113,25 @@ function onSpriteDown(sprite, pointer) {
 	if (PLAYER_DATA[levelnr-1] < 0) {
 		// indicate it's locked by shaking left/right
 		var IconGroup = holdicons[levelnr-1];
-		var xpos = IconGroup.x;
+		var xpos = IconGroup.xOrg;
 
-		var tween = game.add.tween(IconGroup).to({ x: xpos+4 }, 20, Phaser.Easing.Linear.None)
+		var tween = game.add.tween(IconGroup)
+			.to({ x: xpos+4 }, 20, Phaser.Easing.Linear.None)
 			.to({ x: xpos-4 }, 30, Phaser.Easing.Linear.None)
 			.to({ x: xpos+4 }, 40, Phaser.Easing.Linear.None)
 			.to({ x: xpos }, 50, Phaser.Easing.Linear.None)
 			.start();
 	} else {
-		alert('OK level selected! -> ' +sprite.health);
+		// simulate button press animation to indicate selection
+		var IconGroup = holdicons[levelnr-1];
+		var tween = game.add.tween(IconGroup.scale)
+			.to({ x: 0.9, y: 0.9}, 100, Phaser.Easing.Linear.None)
+			.to({ x: 1.0, y: 1.0}, 100, Phaser.Easing.Linear.None)
+			.start();
+			
+		tween._lastChild.onComplete.add(function(){console.log('OK level selected! -> ' +sprite.health);}, this)
+			
+		//
 	};
 }
 
@@ -129,7 +145,7 @@ function animateLevelIcons() {
 		var y = IconGroup.y;
 
 		// tween animation
-		game.add.tween(IconGroup).to( {y: y-600}, 400, Phaser.Easing.Linear.None, true, (i*40));
+		game.add.tween(IconGroup).to( {y: y-600}, 500, Phaser.Easing.Back.Out, true, (i*40));
 	};
 }
 
